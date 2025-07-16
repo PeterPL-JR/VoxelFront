@@ -1,4 +1,4 @@
-import { initSocket, sendMessage } from "./socket.js";
+import { initSocket, sendMessage, addMessageListener } from "./socket.js";
 
 import { initKeyboard } from "./input/keyboard.js";
 import { initMouse } from "./input/mouse.js";
@@ -15,11 +15,13 @@ function init() {
     initKeyboard();
     initMouse();
 
-    setSize();
-    initScene();
+    addMessageListener("init", (data) => {
+        setSize();
+        initScene();
 
-    update();
-    
+        update();
+    });
+
     window.onresize = resize;
     canvas.oncontextmenu = () => false;
 }
