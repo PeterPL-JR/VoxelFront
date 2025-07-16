@@ -1,0 +1,4 @@
+/node_modules
+client/three.js
+server/dist
+.env
