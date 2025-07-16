@@ -1,29 +1,36 @@
-const express = require("express");
+import * as express from "express";
+import * as http from "http";
+import * as path from "path";
+import * as dotenv from "dotenv";
 
-const http = require("http");
-const path = require("path");
+import { WebSocket } from "ws";
 
-require("dotenv").config();
+dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
-
-import {WebSocket} from "ws";
 const wsServer = new WebSocket.Server({server});
 
 const PORT = process.env.PORT;
 
+export const CLIENT_LOCATION = "../../client/";
+export const CLIENT_SRC_LOCATION = CLIENT_LOCATION + "src/";
+
 app.use(express.static(
-    path.join(__dirname, "../../client/")
+    path.join(__dirname, CLIENT_SRC_LOCATION)
 ));
 
-wsServer.on("connection", socket => {
-    socket.onmessage = event => {
-        receiveMessage(JSON.parse(event.data));
-    }
-});
+function init() {
+    wsServer.on("connection", socket => {
+        socket.onmessage = event => {
+            receiveMessage(JSON.parse(event.data));
+        }
+    });
+}
 
-server.listen(PORT, () => {});
+server.listen(PORT, () => {
+    init();
+});
 
 function receiveMessage({event, data}) {
     console.log(event, data);

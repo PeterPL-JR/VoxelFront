@@ -1,7 +1,7 @@
 import { initSocket, sendMessage } from "./socket.js";
 
-import { initKeyboard } from "./keyboard.js";
-import { initMouse } from "./mouse.js";
+import { initKeyboard } from "./input/keyboard.js";
+import { initMouse } from "./input/mouse.js";
 
 (function() {
 

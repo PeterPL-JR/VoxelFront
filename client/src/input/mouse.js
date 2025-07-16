@@ -1,4 +1,4 @@
-import { sendMessage } from "./socket.js";
+import { sendMessage } from "../socket.js";
 
 let mouseX, mouseY;
 
