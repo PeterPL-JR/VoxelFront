@@ -1,0 +1,7 @@
+{
+    "type": "pillar",
+    "textures": {
+        "top": "oak_log_top",
+        "side": "oak_log"
+    }
+}

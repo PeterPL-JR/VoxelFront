@@ -7,6 +7,8 @@ import { WebSocket } from "ws";
 import * as resources from "./resources";
 import * as textures from "./textures";
 
+import * as blocks from "./terrain/block"; 
+
 dotenv.config();
 
 const app = express();
@@ -41,8 +43,15 @@ function init() : void {
     resources.initGameResources();
     textures.initTextures();
 
+    blocks.initBlocks();
+
     wsServer.on("connection", socket => {
-        const gameData = {textures: textures.TEX_ARRAY};
+        const gameData = {
+            textures: textures.TEX_ARRAY,
+            terrain: {
+                blocks: blocks.getBlocks()
+            }
+        };
         sendMessage(socket, "init", gameData);
 
         socket.onmessage = event => {

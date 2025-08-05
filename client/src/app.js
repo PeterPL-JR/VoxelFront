@@ -3,6 +3,7 @@ import { initSocket, sendMessage, addMessageListener } from "./socket.js";
 import { initKeyboard } from "./input/keyboard.js";
 import { initMouse } from "./input/mouse.js";
 
+import * as terrain from "./terrain.js";
 import { initTextures } from "./textures.js";
 
 (function() {
@@ -21,6 +22,7 @@ function init() {
         setSize();
 
         initTextures(data.textures);
+        terrain.init(data.terrain);
 
         initScene();
         update();
@@ -39,6 +41,10 @@ function initScene() {
 
     scene = new THREE.Scene();
     scene.add(camera);
+
+    for(let block of terrain.blocks) {
+        scene.add(block.mesh);
+    }
 }
 
 function update() {
