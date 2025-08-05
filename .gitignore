@@ -1,4 +1,4 @@
 /node_modules
-client/src/three.js
+client/lib/
 server/dist
 .env

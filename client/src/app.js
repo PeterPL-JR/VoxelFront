@@ -3,6 +3,8 @@ import { initSocket, sendMessage, addMessageListener } from "./socket.js";
 import { initKeyboard } from "./input/keyboard.js";
 import { initMouse } from "./input/mouse.js";
 
+import { initTextures } from "./textures.js";
+
 (function() {
 
 const canvas = document.querySelector("canvas");
@@ -17,8 +19,10 @@ function init() {
 
     addMessageListener("init", (data) => {
         setSize();
-        initScene();
 
+        initTextures(data.textures);
+
+        initScene();
         update();
     });
 
