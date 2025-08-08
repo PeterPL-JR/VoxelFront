@@ -8,6 +8,7 @@ import * as resources from "./resources";
 import * as textures from "./textures";
 
 import * as blocks from "./terrain/block"; 
+import { Level } from "./level/level";
 
 dotenv.config();
 
@@ -28,6 +29,9 @@ export const CLIENT_TEXTURES_LOCATION = CLIENT_LOCATION + CLIENT_TEXTURES;
 export const CLIENT_LIB_LOCATION = CLIENT_LOCATION + CLIENT_LIB;
 
 export const RES_LOCATION = "../res/";
+export const SHARED_LOCATION = "../../shared";
+
+let level;
 
 app.use(express.static(
     path.join(__dirname, CLIENT_SRC_LOCATION)
@@ -38,6 +42,9 @@ app.use(express.static(
 app.use(express.static(
     path.join(__dirname, CLIENT_LIB_LOCATION)
 ));
+app.use(express.static(
+    path.join(__dirname, SHARED_LOCATION)
+));
 
 function init() : void {
     resources.initGameResources();
@@ -45,11 +52,16 @@ function init() : void {
 
     blocks.initBlocks();
 
+    level = new Level();
+
     wsServer.on("connection", socket => {
         const gameData = {
             textures: textures.TEX_ARRAY,
             terrain: {
                 blocks: blocks.getBlocks()
+            },
+            level: {
+                chunks: level.chunks
             }
         };
         sendMessage(socket, "init", gameData);

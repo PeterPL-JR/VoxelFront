@@ -6,6 +6,8 @@ import { initMouse } from "./input/mouse.js";
 import * as terrain from "./terrain.js";
 import { initTextures } from "./textures.js";
 
+export let functions = {};
+
 (function() {
 
 const canvas = document.querySelector("canvas");
@@ -20,9 +22,10 @@ function init() {
 
     addMessageListener("init", (data) => {
         setSize();
+        functions = data.functions;
 
         initTextures(data.textures);
-        terrain.init(data.terrain);
+        terrain.init(data.terrain, data.level);
 
         initScene();
         update();
