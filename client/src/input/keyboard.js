@@ -1,14 +1,36 @@
-import { sendMessage } from "../socket.js";
+import * as camera from "../camera.js";
+import { EventHandler } from "./events.js";
+
+const keys = {};
+const events = new EventHandler();
 
 export function initKeyboard() {
-    document.body.onkeydown = event => keyDown(event);
-    document.body.onkeyup = event => keyUp(event);
+    events.addListener("keydown", keyDown);
+    events.addListener("keyup", keyUp);
+}
+
+export function resetKeyboard() {
+    events.reset();
+}
+
+export function updateKeyboard() {
+    camera.getCameraDirection();
+
+    if(keys["W"]) camera.moveForward();
+    if(keys["S"]) camera.moveBack();
+    if(keys["A"]) camera.moveLeft();
+    if(keys["D"]) camera.moveRight();
+    
+    if(keys[" "]) camera.moveUp();
+    if(keys["SHIFT"]) camera.moveDown();
+
+    camera.updateCamera();
 }
 
 function keyDown(event) {
-    sendMessage("keyDown", {key: event.key});
+    keys[event.key.toUpperCase()] = true;
 }
 
 function keyUp(event) {
-    sendMessage("keyUp", {key: event.key});
+    keys[event.key.toUpperCase()] = false;
 }

@@ -1,7 +1,7 @@
 let socket;
 const events = {};
 
-export function initSocket(init) {
+export function init(init) {
     socket = new WebSocket(`ws://${window.location.host}`);
     socket.onopen = init;
     socket.onmessage = (event) => {

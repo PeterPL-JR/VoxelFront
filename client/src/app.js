@@ -1,12 +1,11 @@
-import { initSocket, sendMessage, addMessageListener } from "./socket.js";
+import * as sockets from "./sockets.js";
 
-import { initKeyboard } from "./input/keyboard.js";
-import { initMouse } from "./input/mouse.js";
+import { initKeyboard, resetKeyboard, updateKeyboard } from "./input/keyboard.js";
+import { initMouse, resetMouse } from "./input/mouse.js";
 
 import * as terrain from "./terrain.js";
 import { initTextures } from "./textures.js";
-
-export let functions = {};
+import { initCamera } from "./camera.js";
 
 (function() {
 
@@ -14,15 +13,13 @@ const canvas = document.querySelector("canvas");
 let width, height;
 let renderer, scene, camera;
 
-initSocket(init);
+sockets.init(init);
 
 function init() {
-    initKeyboard();
-    initMouse();
+    initScreen();
 
-    addMessageListener("init", (data) => {
+    sockets.addMessageListener("init", (data) => {
         setSize();
-        functions = data.functions;
 
         initTextures(data.textures);
         terrain.init(data.terrain, data.level);
@@ -30,28 +27,41 @@ function init() {
         initScene();
         update();
     });
-
-    window.onresize = resize;
-    canvas.oncontextmenu = () => false;
 }
 
 function initScene() {
     renderer = new THREE.WebGLRenderer({canvas});
     renderer.setSize(width, height);
-
-    camera = new THREE.PerspectiveCamera(45, width / height, 1, 4000);
-    camera.position.set(0, 0, 0);
-
+    
     scene = new THREE.Scene();
-    scene.add(camera);
+    camera = initCamera(width, height, scene);
 
     for(let block of terrain.blocks) {
         scene.add(block.mesh);
     }
 }
 
+function initScreen() {
+    window.onresize = resize;
+    canvas.oncontextmenu = () => false;
+
+    document.addEventListener("pointerlockchange", () => {
+        if(document.pointerLockElement == canvas) {
+            initKeyboard();
+            initMouse();
+        } else {
+            resetKeyboard();
+            resetMouse();
+        }
+    });
+
+    canvas.addEventListener("click", lockPointer);
+    lockPointer();
+}
+
 function update() {
     requestAnimationFrame(update);
+    updateKeyboard();
     render();
 }
 
@@ -74,7 +84,15 @@ function setSize() {
     width = window.innerWidth;
     height = window.innerHeight;
 
-    sendMessage("resize", {width, height});
+    sockets.sendMessage("resize", {width, height});
+}
+
+function lockPointer() {
+    canvas.requestPointerLock().catch(() => {
+        setTimeout(() => {
+            lockPointer();
+        }, 100);
+    });
 }
 
 })();
